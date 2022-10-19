@@ -151,7 +151,7 @@ class GWNET(nn.Module):
 
         self.receptive_field = receptive_field
 
-    def forward(self, history_data: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, history_data: torch.Tensor, future_data: torch.Tensor, batch_seen: int, epoch: int, train: bool, **kwargs) -> torch.Tensor:
         """Feedforward function of Graph WaveNet.
 
         Args:

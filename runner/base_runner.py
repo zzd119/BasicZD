@@ -47,7 +47,7 @@ class BaseRunner(pl.LightningModule):
         batch_size, length, num_nodes, _ = future_data.shape
 
         history_data = self.select_input_features(history_data)
-        prediction_data = self.model(history_data)
+        prediction_data = self.model(history_data,future_data,epoch=None,batch_seen=None,train=True)
         assert list(prediction_data.shape)[:3] == [batch_size, length, num_nodes], \
             "error shape of the output, edit the forward function to reshape it to [B, L, N, C]"
 

@@ -58,7 +58,7 @@ class STID(nn.Module):
         self.regression_layer = nn.Conv2d(
             in_channels=self.hidden_dim, out_channels=self.output_len, kernel_size=(1, 1), bias=True)
 
-    def forward(self, history_data: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, history_data: torch.Tensor, future_data: torch.Tensor, batch_seen: int, epoch: int, train: bool, **kwargs) -> torch.Tensor:
 
         input_data = history_data[..., range(self.input_dim)]
 

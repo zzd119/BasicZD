@@ -12,9 +12,11 @@ class MTGNN_PEMS04():
 
     @staticmethod
     def add_options_specific_arguments(parent_parser):
-        _,adj_mx = load_adj("datasets/PEMS04/output/adj/adj_mx.pkl", "doubletransition")
+        temp_args, _ = parent_parser.parse_known_args()
+        _, adj_mx = load_adj("datasets/PEMS04/output/in{0}_out{1}/adj_mx.pkl".format(temp_args.history_seq_len,temp_args.future_seq_len),"doubletransition")
         adj_mx = torch.tensor(adj_mx) - torch.eye(307)
-        parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
+        temp_args, _ = parent_parser.parse_known_args()
+        parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--gcn_true", default=True)
         parser.add_argument("--buildA_true", default=True)
         parser.add_argument("--gcn_depth", default=2)
@@ -22,8 +24,8 @@ class MTGNN_PEMS04():
         parser.add_argument("--dropout", default=0.3)
         parser.add_argument("--subgraph_size", default=20)
         parser.add_argument("--node_dim", default=40)
-        parser.add_argument("--input_len", default=12)
-        parser.add_argument("--output_len", default=12)
+        parser.add_argument("--input_len", default=temp_args.history_seq_len)
+        parser.add_argument("--output_len", default=temp_args.future_seq_len)
         parser.add_argument("--num_node", default=307)
         parser.add_argument("--dilation_exponential", default=1)
         parser.add_argument("--conv_channels", default=32)
