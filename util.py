@@ -7,9 +7,20 @@ from datasets.METRLA.generate_training_data import METRLA_generate_data
 from datasets.PEMS04.generate_training_data import PEMS04_generate_data
 from models.AGCRN import AGCRN
 from models.Autoformer import Autoformer
+from models.D2STGNN import D2STGNN
+from models.DCRNN import DCRNN
+from models.DGCRN import DGCRN
+from models.FEDformer import FEDformer
+from models.GTS import GTS
 from models.GWNET import GWNET
+from models.Informer import Informer
 from models.MTGNN import MTGNN
+from models.Pyraformer import Pyraformer
 from models.STID import STID
+from models.STNorm import STNorm
+from models.StemGNN import StemGNN
+from models.STGCN import STGCN
+
 
 def create_data(args,cover=False):
     if os.path.exists(args.output_dir):
@@ -34,6 +45,26 @@ def get_model(args):
         model = MTGNN(**vars(args))
     if args.model_name == "Autoformer":
         model = Autoformer(**vars(args))
+    if args.model_name == "D2STGNN":
+        model = D2STGNN(**vars(args))
+    if args.model_name == "DCRNN":
+        model = DCRNN(**vars(args))
+    if args.model_name == "DGCRN":
+        model = DGCRN(**vars(args))
+    if args.model_name == "FEDformer":
+        model = FEDformer(**vars(args))
+    if args.model_name == "GTS":
+        model = GTS(**vars(args))
+    if args.model_name == "Informer":
+        model = Informer(**vars(args))
+    if args.model_name == "Pyraformer":
+        model = Pyraformer(**vars(args))
+    if args.model_name == "StemGNN":
+        model = StemGNN(**vars(args))
+    if args.model_name == "STGCN":
+        model = STGCN(**vars(args))
+    if args.model_name == "STNorm":
+        model = STNorm(**vars(args))
     return model
 
 def get_task(args, model):

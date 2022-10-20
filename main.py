@@ -2,6 +2,7 @@ import argparse
 import traceback
 import options
 import datasets
+import pytorch_lightning as pl
 from util import create_data, runner_mian
 
 parser = argparse.ArgumentParser()
@@ -15,14 +16,17 @@ parser.add_argument(
     type=str,
     help="The name of the dataset",
     choices=("PEMS04","METRLA"),
-    default="METRLA"
+    default="PEMS04"
 )
 parser.add_argument(
     "--model_name",
     type=str,
     help="The name of the model for spatiotemporal prediction",
-    choices=("STID","AGCRN","GWNET","MTGNN","Autoformer"),
-    default="MTGNN",
+    choices=("STID","AGCRN","GWNET","MTGNN","Autoformer","D2STGNN",
+             "DCRNN","DGCRN","FEDformer","GTS","Informer","Pyraformer",
+             "StemGNN","STGCN","STNorm"),
+
+    default="STNorm",
 )
 
 temp_args, _ = parser.parse_known_args()

@@ -4,7 +4,7 @@ import torch.nn as nn
 from .embed import DataEmbedding_wo_pos, DataEmbedding
 from .auto_correlation import AutoCorrelation, AutoCorrelationLayer
 from .enc_dec import Encoder, Decoder, EncoderLayer, DecoderLayer, my_Layernorm, series_decomp
-from models.utils import data_transformation_4_xformer
+from ..utils import data_transformation_4_xformer
 
 
 class Autoformer(nn.Module):
@@ -14,29 +14,27 @@ class Autoformer(nn.Module):
     Ref Official Code: https://github.com/thuml/Autoformer
     """
 
-    def __init__(self, seq_len,label_len,pred_len,output_attention,embedding_type,moving_avg,
-                 enc_in,d_model,num_time_features,dropout,factor,n_heads,d_ff,activation,
-                 e_layers,c_out,dec_in,d_layers,**kwargs):
+    def __init__(self, **model_args):
         super(Autoformer, self).__init__()
-        self.seq_len = seq_len
-        self.label_len = label_len
-        self.pred_len = pred_len
-        self.output_attention = output_attention
-        self.embedding_type = embedding_type
+        self.seq_len = int(model_args["seq_len"])
+        self.label_len = int(model_args["label_len"])
+        self.pred_len = int(model_args["pred_len"])
+        self.output_attention = model_args["output_attention"]
+        self.embedding_type = model_args["embedding_type"]
 
         # Decomp
-        kernel_size = moving_avg
+        kernel_size = model_args["moving_avg"]
         self.decomp = series_decomp(kernel_size)
 
         # Embedding
         # The series-wise connection inherently contains the sequential information.
         # Thus, we can discard the position embedding of transformers.
         if self.embedding_type == "DataEmbedding_wo_pos":
-            self.enc_embedding = DataEmbedding_wo_pos(enc_in, d_model, num_time_features, dropout)
-            self.dec_embedding = DataEmbedding_wo_pos(dec_in, d_model, num_time_features, dropout)
+            self.enc_embedding = DataEmbedding_wo_pos(model_args["enc_in"], model_args["d_model"], model_args["num_time_features"], model_args["dropout"])
+            self.dec_embedding = DataEmbedding_wo_pos(model_args["dec_in"], model_args["d_model"], model_args["num_time_features"], model_args["dropout"])
         elif self.embedding_type == "DataEmbedding":
-            self.enc_embedding = DataEmbedding(enc_in, d_model, num_time_features, dropout)
-            self.dec_embedding = DataEmbedding(dec_in, d_model, num_time_features, dropout)
+            self.enc_embedding = DataEmbedding(model_args["enc_in"], model_args["d_model"], model_args["num_time_features"], model_args["dropout"])
+            self.dec_embedding = DataEmbedding(model_args["dec_in"], model_args["d_model"], model_args["num_time_features"], model_args["dropout"])
         else:
             raise Exception("Unknown embedding type.")
 
@@ -45,41 +43,41 @@ class Autoformer(nn.Module):
             [
                 EncoderLayer(
                     AutoCorrelationLayer(
-                        AutoCorrelation(False, factor, attention_dropout=dropout,
-                                        output_attention=output_attention),
-                        d_model, n_heads),
-                    d_model,
-                    d_ff,
-                    moving_avg=moving_avg,
-                    dropout=dropout,
-                    activation=activation
-                ) for l in range(e_layers)
+                        AutoCorrelation(False, model_args["factor"], attention_dropout=model_args["dropout"],
+                                        output_attention=model_args["output_attention"]),
+                        model_args["d_model"], model_args["n_heads"]),
+                    model_args["d_model"],
+                    model_args["d_ff"],
+                    moving_avg=model_args["moving_avg"],
+                    dropout=model_args["dropout"],
+                    activation=model_args["activation"]
+                ) for l in range(model_args["e_layers"])
             ],
-            norm_layer=my_Layernorm(d_model)
+            norm_layer=my_Layernorm(model_args["d_model"])
         )
         # Decoder
         self.decoder = Decoder(
             [
                 DecoderLayer(
                     AutoCorrelationLayer(
-                        AutoCorrelation(True, factor, attention_dropout=dropout,
+                        AutoCorrelation(True, model_args["factor"], attention_dropout=model_args["dropout"],
                                         output_attention=False),
-                        d_model, n_heads),
+                        model_args["d_model"], model_args["n_heads"]),
                     AutoCorrelationLayer(
-                        AutoCorrelation(False, factor, attention_dropout=dropout,
+                        AutoCorrelation(False, model_args["factor"], attention_dropout=model_args["dropout"],
                                         output_attention=False),
-                        d_model, n_heads),
-                    d_model,
-                    c_out,
-                    d_ff,
-                    moving_avg=moving_avg,
-                    dropout=dropout,
-                    activation=activation,
+                        model_args["d_model"], model_args["n_heads"]),
+                    model_args["d_model"],
+                    model_args["c_out"],
+                    model_args["d_ff"],
+                    moving_avg=model_args["moving_avg"],
+                    dropout=model_args["dropout"],
+                    activation=model_args["activation"],
                 )
-                for l in range(d_layers)
+                for l in range(model_args["d_layers"])
             ],
-            norm_layer=my_Layernorm(d_model),
-            projection=nn.Linear(d_model, c_out, bias=True)
+            norm_layer=my_Layernorm(model_args["d_model"]),
+            projection=nn.Linear(model_args["d_model"], model_args["c_out"], bias=True)
         )
 
     def forward_xformer(self, x_enc: torch.Tensor, x_mark_enc: torch.Tensor, x_dec: torch.Tensor, x_mark_dec: torch.Tensor,
@@ -121,7 +119,7 @@ class Autoformer(nn.Module):
 
         return dec_out[:, -self.pred_len:, :].unsqueeze(-1)  # [B, L, N, C]
 
-    def forward(self, history_data: torch.Tensor, future_data: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, history_data: torch.Tensor, future_data: torch.Tensor, batch_seen: int, epoch: int, train: bool, **kwargs) -> torch.Tensor:
         """
 
         Args:

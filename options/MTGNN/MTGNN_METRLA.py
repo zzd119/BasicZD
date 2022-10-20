@@ -18,6 +18,7 @@ class MTGNN_METRLA():
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--gcn_true", default=True)
         parser.add_argument("--buildA_true", default=True)
+        parser.add_argument("--static_feat", default=None)
         parser.add_argument("--gcn_depth", default=2)
         parser.add_argument("--predefined_A", default=adj_mx)
         parser.add_argument("--dropout", default=0.3)
@@ -46,5 +47,5 @@ class MTGNN_METRLA():
         parser.add_argument("--forward_features", default=[0,1])
         parser.add_argument("--target_features", default=[0])
         parser.add_argument("--learning_rate", default=0.001)
-        parser.add_argument("--weight_decay", default=0.0001,)
+        parser.add_argument("--weight_decay", default=0.0001)
         return parser

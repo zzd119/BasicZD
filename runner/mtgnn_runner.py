@@ -6,13 +6,13 @@ from .base_runner import BaseRunner
 
 
 class MTGNNRunner(BaseRunner):
-    def __init__(self,forward_features,target_features,step_size,num_node,num_split,learning_rate,weight_decay,model,input_len,output_len,dataset_name,**kwargs):
-        super().__init__(learning_rate,weight_decay,model,input_len,output_len,dataset_name,forward_features,target_features)
-        self.forward_features = forward_features
-        self.target_features = target_features
-        self.step_size = step_size
-        self.num_nodes = num_node
-        self.num_split = num_split
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.forward_features = kwargs["forward_features"]
+        self.target_features = kwargs["target_features"]
+        self.step_size = kwargs["step_size"]
+        self.num_nodes = kwargs["num_node"]
+        self.num_split = kwargs["num_split"]
         self.perm = None
 
     def select_input_features(self, data: torch.Tensor) -> torch.Tensor:

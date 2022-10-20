@@ -26,5 +26,4 @@ class AGCRN_METRLA():
         parser.add_argument("--forward_features", default=[0,1])
         parser.add_argument("--target_features", default=[0])
         parser.add_argument("--learning_rate", default=0.003)
-        parser.add_argument("--weight_decay", default=0)
         return parser

@@ -11,22 +11,22 @@ class STID(nn.Module):
     Link: https://arxiv.org/abs/2208.05233
     """
 
-    def __init__(self,num_node,node_dim,input_len,input_dim,embed_dim,output_len,num_layer,temp_dim_tid,temp_dim_diw,if_time_in_day,if_day_in_week,if_spatial,**kwargs):
+    def __init__(self,**model_args):
         super().__init__()
         # attributes
-        self.num_node = num_node
-        self.node_dim = node_dim
-        self.input_len = input_len
-        self.input_dim = input_dim
-        self.embed_dim = embed_dim
-        self.output_len = output_len
-        self.num_layer = num_layer
-        self.temp_dim_tid = temp_dim_tid
-        self.temp_dim_diw = temp_dim_diw
+        self.num_node = model_args["num_node"]
+        self.node_dim = model_args["node_dim"]
+        self.input_len = model_args["input_len"]
+        self.input_dim = model_args["input_dim"]
+        self.embed_dim = model_args["embed_dim"]
+        self.output_len = model_args["output_len"]
+        self.num_layer = model_args["num_layer"]
+        self.temp_dim_tid = model_args["temp_dim_tid"]
+        self.temp_dim_diw = model_args["temp_dim_diw"]
 
-        self.if_time_in_day = if_time_in_day
-        self.if_day_in_week = if_day_in_week
-        self.if_spatial = if_spatial
+        self.if_time_in_day = model_args["if_time_in_day"]
+        self.if_day_in_week = model_args["if_day_in_week"]
+        self.if_spatial = model_args["if_spatial"]
 
         # spatial embeddings
         if self.if_spatial:
