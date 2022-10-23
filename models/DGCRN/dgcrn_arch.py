@@ -10,11 +10,11 @@ from .dgcrn_layer import *
 
 
 class DGCRN(nn.Module):
-    def __init__(self, gcn_depth, num_node, predefined_A=None, dropout=0.3, subgraph_size=20, node_dim=40, middle_dim=2, seq_length=12, in_dim=2, list_weight=[0.05, 0.95, 0.95], tanhalpha=3, cl_decay_steps=4000, rnn_size=64, hyperGNN_dim=16,**kwargs):
+    def __init__(self, gcn_depth, num_nodes, predefined_A=None, dropout=0.3, subgraph_size=20, node_dim=40, middle_dim=2, seq_length=12, in_dim=2, list_weight=[0.05, 0.95, 0.95], tanhalpha=3, cl_decay_steps=4000, rnn_size=64, hyperGNN_dim=16,**kwargs):
         super(DGCRN, self).__init__()
         self.output_dim = 1
 
-        self.num_nodes = num_node
+        self.num_nodes = num_nodes
         self.dropout = dropout
         self.predefined_A = predefined_A
 

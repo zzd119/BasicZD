@@ -22,13 +22,13 @@ class SpatioTemporalCSVDataModule(pl.LightningDataModule):
         self.test_dataset = TimeSeriesForecastingDataset(data_file_path,index_file_path,"test")
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset,batch_size=self.train_batch_size,num_workers=0)
+        return DataLoader(self.train_dataset,batch_size=self.train_batch_size,num_workers=0,shuffle=True)
 
     def val_dataloader(self):
         return DataLoader(self.val_dataset,batch_size=self.val_batch_size,num_workers=0)
 
     def test_dataloader(self):
-        return DataLoader(self.test_batch_size,batch_size=self.test_batch_size,num_workers=0)
+        return DataLoader(self.test_dataset,batch_size=self.test_batch_size,num_workers=0)
 
 
 if __name__ == "__main__":

@@ -58,7 +58,7 @@ class D2STGNN(nn.Module):
         self._output_hidden = 512
         self._output_dim = model_args['seq_length']
 
-        self._num_nodes = model_args['num_node']
+        self._num_nodes = model_args['num_nodes']
         self._k_s = model_args['k_s']
         self._k_t = model_args['k_t']
         self._num_layers = 5

@@ -24,7 +24,7 @@ class D2STGNN_PEMS04():
         parser.add_argument("--k_t", default=3)
         parser.add_argument("--k_s", default=2)
         parser.add_argument("--gap", default=3)
-        parser.add_argument("--num_node", default=307)
+        parser.add_argument("--num_nodes", default=307)
         parser.add_argument("--adjs", default=[torch.tensor(adj) for adj in adj_mx])
         parser.add_argument("--num_layers", default=5)
         parser.add_argument("--num_modalities", default=2)

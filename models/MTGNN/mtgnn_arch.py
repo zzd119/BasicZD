@@ -12,7 +12,7 @@ class MTGNN(nn.Module):
     Link: https://arxiv.org/abs/2005.11650
     """
 
-    def __init__(self, gcn_true, buildA_true, gcn_depth, num_node,
+    def __init__(self, gcn_true, buildA_true, gcn_depth, num_nodes,
                  predefined_A=None, static_feat=None, dropout=0.3,
                  subgraph_size=20, node_dim=40, dilation_exponential=1,
                  conv_channels=32, residual_channels=32, skip_channels=64,
@@ -21,7 +21,7 @@ class MTGNN(nn.Module):
         super(MTGNN, self).__init__()
         self.gcn_true = gcn_true
         self.buildA_true = buildA_true
-        self.num_nodes = num_node
+        self.num_nodes = num_nodes
         self.dropout = dropout
         self.predefined_A = predefined_A
         self.filter_convs = nn.ModuleList()
@@ -34,7 +34,7 @@ class MTGNN(nn.Module):
         self.start_conv = nn.Conv2d(
             in_channels=in_dim, out_channels=residual_channels, kernel_size=(1, 1))
         self.gc = graph_constructor(
-            num_node, subgraph_size, node_dim, alpha=tanhalpha, static_feat=static_feat)
+            num_nodes, subgraph_size, node_dim, alpha=tanhalpha, static_feat=static_feat)
 
         self.seq_length = seq_length
         kernel_size = 7
@@ -79,10 +79,10 @@ class MTGNN(nn.Module):
 
                 if self.seq_length > self.receptive_field:
                     self.norm.append(LayerNorm(
-                        (residual_channels, num_node, self.seq_length - rf_size_j + 1), elementwise_affine=layer_norm_affline))
+                        (residual_channels, num_nodes, self.seq_length - rf_size_j + 1), elementwise_affine=layer_norm_affline))
                 else:
                     self.norm.append(LayerNorm(
-                        (residual_channels, num_node, self.receptive_field - rf_size_j + 1), elementwise_affine=layer_norm_affline))
+                        (residual_channels, num_nodes, self.receptive_field - rf_size_j + 1), elementwise_affine=layer_norm_affline))
 
                 new_dilation *= dilation_exponential
 

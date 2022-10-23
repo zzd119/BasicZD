@@ -14,7 +14,7 @@ class STID(nn.Module):
     def __init__(self,**model_args):
         super().__init__()
         # attributes
-        self.num_node = model_args["num_node"]
+        self.num_nodes = model_args["num_nodes"]
         self.node_dim = model_args["node_dim"]
         self.input_len = model_args["input_len"]
         self.input_dim = model_args["input_dim"]
@@ -31,7 +31,7 @@ class STID(nn.Module):
         # spatial embeddings
         if self.if_spatial:
             self.node_emb = nn.Parameter(
-                torch.empty(self.num_node, self.node_dim))
+                torch.empty(self.num_nodes, self.node_dim))
             nn.init.xavier_uniform_(self.node_emb)
         # temporal embeddings
         if self.if_time_in_day:
@@ -76,10 +76,10 @@ class STID(nn.Module):
             day_in_week_emb = None
 
         # time series embedding
-        batch_size, _, num_node, _ = input_data.shape
+        batch_size, _, num_nodes, _ = input_data.shape
         input_data = input_data.transpose(1, 2).contiguous()
         input_data = input_data.view(
-            batch_size, num_node, -1).transpose(1, 2).unsqueeze(-1)
+            batch_size, num_nodes, -1).transpose(1, 2).unsqueeze(-1)
         time_series_emb = self.time_series_emb_layer(input_data)
 
         node_emb = []

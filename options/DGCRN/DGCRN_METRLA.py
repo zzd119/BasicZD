@@ -18,7 +18,7 @@ class DGCRN_METRLA():
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
         parser.add_argument("--gcn_depth", default=2)
-        parser.add_argument("--num_node", default=207)
+        parser.add_argument("--num_nodes", default=207)
         parser.add_argument("--predefined_A", default=[torch.Tensor(_) for _ in adj_mx])
         parser.add_argument("--dropout", default=0.3)
         parser.add_argument("--subgraph_size", default=20)

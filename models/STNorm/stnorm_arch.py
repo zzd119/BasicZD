@@ -60,7 +60,7 @@ class STNorm(nn.Module):
     Ref Official Code: https://github.com/JLDeng/ST-Norm/blob/master/models/Wavenet.py
     """
 
-    def __init__(self, num_node, tnorm_bool, snorm_bool, in_dim, out_dim, channels, kernel_size, blocks, layers,**kwargs):
+    def __init__(self, num_nodes, tnorm_bool, snorm_bool, in_dim, out_dim, channels, kernel_size, blocks, layers,**kwargs):
         super(STNorm, self).__init__()
         self.blocks = blocks
         self.layers = layers
@@ -98,7 +98,7 @@ class STNorm(nn.Module):
                 # dilated convolutions
                 self.dilation.append(new_dilation)
                 if self.tnorm_bool:
-                    self.tn.append(TNorm(num_node, channels))
+                    self.tn.append(TNorm(num_nodes, channels))
                 if self.snorm_bool:
                     self.sn.append(SNorm(channels))
                 self.filter_convs.append(nn.Conv2d(

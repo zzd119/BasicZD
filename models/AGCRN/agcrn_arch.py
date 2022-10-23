@@ -5,18 +5,18 @@ from .agcrn_cell import AGCRNCell
 
 
 class AVWDCRNN(nn.Module):
-    def __init__(self, node_num, dim_in, dim_out, cheb_k, embed_dim, num_layers=1):
+    def __init__(self, node_nums, dim_in, dim_out, cheb_k, embed_dim, num_layers=1):
         super(AVWDCRNN, self).__init__()
         assert num_layers >= 1, 'At least one DCRNN layer in the Encoder.'
-        self.node_num = node_num
+        self.node_nums = node_nums
         self.input_dim = dim_in
         self.num_layers = num_layers
         self.dcrnn_cells = nn.ModuleList()
         self.dcrnn_cells.append(
-            AGCRNCell(node_num, dim_in, dim_out, cheb_k, embed_dim))
+            AGCRNCell(node_nums, dim_in, dim_out, cheb_k, embed_dim))
         for _ in range(1, num_layers):
             self.dcrnn_cells.append(
-                AGCRNCell(node_num, dim_out, dim_out, cheb_k, embed_dim))
+                AGCRNCell(node_nums, dim_out, dim_out, cheb_k, embed_dim))
 
     def forward(self, x, init_state, node_embeddings):
         # shape of x: (B, T, N, D)

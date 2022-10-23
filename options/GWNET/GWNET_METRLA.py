@@ -17,7 +17,7 @@ class GWNET_METRLA():
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--num_node", default=207)
+        parser.add_argument("--num_nodes", default=207)
         parser.add_argument("--supports", default=[torch.tensor(i) for i in adj_mx])
         parser.add_argument("--dropout", default=0.3)
         parser.add_argument("--gcn_bool", default=True)

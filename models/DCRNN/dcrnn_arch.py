@@ -16,7 +16,7 @@ class Seq2SeqAttrs:
             model_kwargs.get("max_diffusion_step", 2))
         self.cl_decay_steps = int(model_kwargs.get("cl_decay_steps", 1000))
         self.filter_type = model_kwargs.get("filter_type", "laplacian")
-        self.num_nodes = int(model_kwargs.get("num_node", 1))
+        self.num_nodes = int(model_kwargs.get("num_nodes", 1))
         self.num_rnn_layers = int(model_kwargs.get("num_rnn_layers", 1))
         self.rnn_units = int(model_kwargs.get("rnn_units"))
         self.hidden_state_size = self.num_nodes * self.rnn_units

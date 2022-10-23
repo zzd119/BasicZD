@@ -60,7 +60,7 @@ class GWNET(nn.Module):
     Ref Official Code: https://github.com/nnzhan/Graph-WaveNet/blob/master/model.py
     """
 
-    def __init__(self, num_node, dropout=0.3, supports=None,
+    def __init__(self, num_nodes, dropout=0.3, supports=None,
                     gcn_bool=True, addaptadj=True, aptinit=None,
                     in_dim=2, out_dim=12, residual_channels=32,
                     dilation_channels=32, skip_channels=256, end_channels=512,
@@ -95,9 +95,9 @@ class GWNET(nn.Module):
                 if supports is None:
                     self.supports = []
                 self.nodevec1 = nn.Parameter(
-                    torch.randn(num_node, 10), requires_grad=True)
+                    torch.randn(num_nodes, 10), requires_grad=True)
                 self.nodevec2 = nn.Parameter(
-                    torch.randn(10, num_node), requires_grad=True)
+                    torch.randn(10, num_nodes), requires_grad=True)
                 self.supports_len += 1
             else:
                 if supports is None:

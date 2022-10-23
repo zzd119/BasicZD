@@ -82,7 +82,8 @@ def runner_mian(args):
     dm = get_data(args)
     model = get_model(args)
     task = get_task(args, model)
-    trainer = pl.Trainer.from_argparse_args(args)
+    trainer = pl.Trainer.from_argparse_args(args,num_nodes=1)
     trainer.fit(task, dm)
-    results = trainer.validate(datamodule=dm)
+    # trainer.validate(datamodule=dm)
+    results = trainer.test(task, dm, ckpt_path='best')
     return results

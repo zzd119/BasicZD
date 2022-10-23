@@ -23,7 +23,7 @@ class GTS_PEMS04():
         parser.add_argument("--input_dim", default=2)
         parser.add_argument("--l1_decay", default=0)
         parser.add_argument("--max_diffusion_step", default=3)
-        parser.add_argument("--num_node", default=307)
+        parser.add_argument("--num_nodes", default=307)
         parser.add_argument("--num_rnn_layers", default=1)
         parser.add_argument("--output_dim", default=1)
         parser.add_argument("--rnn_units", default=64)

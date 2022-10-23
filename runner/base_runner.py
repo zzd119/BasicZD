@@ -109,6 +109,16 @@ class BaseRunner(pl.LightningModule):
             metric_item = self.metric_forward(metric_func, [prediction, real_value])
             metrics[metric_name] = metric_item
         self.log_dict(metrics)
+        return metrics
+
+    def test_step(self, batch, batch_idx):
+        prediction, real_value = self.shared_step(batch, batch_idx)
+        metrics = {}
+        for metric_name, metric_func in self.metrics.items():
+            metric_item = self.metric_forward(metric_func, [prediction, real_value])
+            metrics[metric_name] = metric_item
+        self.log_dict(metrics)
+        return metrics
 
     def configure_optimizers(self):
         return torch.optim.Adam(

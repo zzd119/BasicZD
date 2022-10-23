@@ -14,7 +14,7 @@ class Pyraformer_METRLA():
         parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--num_node", default=207)
+        parser.add_argument("--num_nodes", default=207)
         parser.add_argument("--input_size", default=temp_args.history_seq_len)
         parser.add_argument("--predict_step", default=temp_args.history_seq_len)
         parser.add_argument("--enc_in", default=207)
