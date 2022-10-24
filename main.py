@@ -12,14 +12,15 @@ parser.add_argument("--max_epochs", default=20)
 parser.add_argument("--accelerator", default='gpu')
 parser.add_argument("--device", default=[0])
 parser.add_argument("--callbacks",default=[ckpt_callback])
+parser.add_argument("--cover", default=False)
 parser.add_argument("--history_seq_len",default=12)
 parser.add_argument("--future_seq_len",default=12)
 parser.add_argument(
     "--dataset_name",
     type=str,
     help="The name of the dataset",
-    choices=("PEMS04","METRLA"),
-    default="PEMS04"
+    choices=("PEMS04","METRLA","ShenZhen"),
+    default="ShenZhen"
 )
 parser.add_argument(
     "--model_name",

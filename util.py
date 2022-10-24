@@ -5,6 +5,7 @@ from pytorch_lightning.utilities import rank_zero_info
 from data.spatiotemprol import SpatioTemporalCSVDataModule
 from datasets.METRLA.generate_training_data import METRLA_generate_data
 from datasets.PEMS04.generate_training_data import PEMS04_generate_data
+from datasets.ShenZhen.generate_training_data import ShenZhen_generate_data
 from models.AGCRN import AGCRN
 from models.Autoformer import Autoformer
 from models.D2STGNN import D2STGNN
@@ -22,9 +23,9 @@ from models.StemGNN import StemGNN
 from models.STGCN import STGCN
 
 
-def create_data(args,cover=False):
+def create_data(args):
     if os.path.exists(args.output_dir):
-        if not cover:
+        if not args.cover:
             return
     else:
         os.makedirs(args.output_dir)
@@ -32,6 +33,8 @@ def create_data(args,cover=False):
         METRLA_generate_data(args)
     if args.dataset_name == "PEMS04":
         PEMS04_generate_data(args)
+    if args.dataset_name == "ShenZhen":
+        ShenZhen_generate_data(args)
 
 def get_model(args):
     model = None

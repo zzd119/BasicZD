@@ -11,10 +11,7 @@ class METRLA_Dataset():
         history_seq_len = temp_args.history_seq_len
         future_seq_len = temp_args.future_seq_len
         dataset_name = temp_args.dataset_name
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--dataset_name", default=dataset_name)
-        parser.add_argument("--history_seq_len", default=history_seq_len)
-        parser.add_argument("--future_seq_len", default=future_seq_len)
+        parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
         parser.add_argument("--output_dir", type=str,
                             default="datasets/{0}/output/in{1}_out{2}".format(dataset_name,history_seq_len, future_seq_len), help="Output directory.")
         parser.add_argument("--data_file_path", type=str,

@@ -1,7 +1,7 @@
 import argparse
 
 
-class PEMS04_Dataset():
+class ShenZhen_Dataset():
     def __init__(self) -> None:
         super().__init__()
 
@@ -15,10 +15,10 @@ class PEMS04_Dataset():
         parser.add_argument("--output_dir", type=str,
                             default="datasets/{0}/output/in{1}_out{2}".format(dataset_name,history_seq_len, future_seq_len), help="Output directory.")
         parser.add_argument("--data_file_path", type=str,
-                            default="datasets/{0}/raw_data/{0}.npz".format(dataset_name), help="Raw traffic readings.")
+                            default="datasets/{0}/raw_data/{0}.csv".format(dataset_name), help="Raw traffic readings.")
         parser.add_argument("--graph_file_path", type=str,
-                            default="datasets/{0}/raw_data/adj_{0}.pkl".format(dataset_name), help="Raw traffic readings.")
-        parser.add_argument("--steps_per_day", type=int,default=288, help="Sequence Length.")
+                            default="datasets/{0}/raw_data/adj_{0}.csv".format(dataset_name), help="Raw traffic readings.")
+        parser.add_argument("--steps_per_day", type=int,default=96, help="Sequence Length.")
         parser.add_argument("--tod", type=bool, default=True,
                             help="Add feature time_of_day.")
         parser.add_argument("--dow", type=bool, default=True,
