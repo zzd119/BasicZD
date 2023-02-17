@@ -19,8 +19,8 @@ parser.add_argument(
     "--dataset_name",
     type=str,
     help="The name of the dataset",
-    choices=("PEMS04","METRLA","ShenZhen"),
-    default="ShenZhen"
+    choices=("PEMS04","PEMS07","PEMS08","PEMSBAY","METRLA","ShenZhen","GuangZhou","ShangHai"),
+    default="PEMS04"
 )
 parser.add_argument(
     "--model_name",

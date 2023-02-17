@@ -3,8 +3,13 @@ import pytorch_lightning as pl
 import runner
 from pytorch_lightning.utilities import rank_zero_info
 from data.spatiotemprol import SpatioTemporalCSVDataModule
+from datasets.GuangZhou.generate_training_data import GuangZhuo_generate_data
 from datasets.METRLA.generate_training_data import METRLA_generate_data
 from datasets.PEMS04.generate_training_data import PEMS04_generate_data
+from datasets.PEMS07.generate_training_data import PEMS07_generate_data
+from datasets.PEMS08.generate_training_data import PEMS08_generate_data
+from datasets.PEMSBAY.generate_training_data import PEMSBAY_generate_data
+from datasets.ShangHai.generate_training_data import ShangHai_generate_data
 from datasets.ShenZhen.generate_training_data import ShenZhen_generate_data
 from models.AGCRN import AGCRN
 from models.Autoformer import Autoformer
@@ -31,10 +36,21 @@ def create_data(args):
         os.makedirs(args.output_dir)
     if args.dataset_name == "METRLA":
         METRLA_generate_data(args)
+    if args.dataset_name == "PEMSBAY":
+        PEMSBAY_generate_data(args)
     if args.dataset_name == "PEMS04":
         PEMS04_generate_data(args)
+    if args.dataset_name == "PEMS07":
+        PEMS07_generate_data(args)
+    if args.dataset_name == "PEMS08":
+        PEMS08_generate_data(args)
     if args.dataset_name == "ShenZhen":
         ShenZhen_generate_data(args)
+    if args.dataset_name == "GuangZhou":
+        GuangZhuo_generate_data(args)
+    if args.dataset_name == "ShangHai":
+        ShangHai_generate_data(args)
+
 
 def get_model(args):
     model = None
@@ -81,12 +97,17 @@ def get_data(args):
     return dm
 
 def runner_mian(args):
+    ckpt_callback = pl.callbacks.ModelCheckpoint(
+        monitor='Val_MAE',
+        save_top_k=1,
+        mode='min'
+    )
     rank_zero_info(vars(args))
     dm = get_data(args)
     model = get_model(args)
     task = get_task(args, model)
-    trainer = pl.Trainer.from_argparse_args(args,num_nodes=1)
+    trainer = pl.Trainer.from_argparse_args(args,num_nodes=1,callbacks=[ckpt_callback])
     trainer.fit(task, dm)
-    # trainer.validate(datamodule=dm)
+    trainer.validate(datamodule=dm, ckpt_path='best')
     results = trainer.test(task, dm, ckpt_path='best')
     return results

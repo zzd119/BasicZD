@@ -1,15 +1,10 @@
-from typing import Optional
-
 import pytorch_lightning as pl
-import torch
 import torch.nn as nn
-from pytorch_lightning.utilities.types import STEP_OUTPUT
-
+from torch.optim.lr_scheduler import  MultiStepLR
 from data.transform import *
 from metrics import masked_mae, masked_rmse, masked_mape
 import functools
 from utils import load_pkl
-
 from utils.registry import SCALER_REGISTRY
 
 
@@ -26,9 +21,9 @@ class BaseRunner(pl.LightningModule):
         **kwargs
     ) -> None:
         super(BaseRunner,self).__init__()
-        self.learning_rate = kwargs.get("learning_rate", 0)
+        self.learning_rate = kwargs.get("learning_rate", 1e-3)
         self.weight_decay = kwargs.get("weight_decay", 0)
-        self.eps = kwargs.get("eps", 0)
+        self.eps = kwargs.get("eps", 1e-8)
         self.model = model
         self.warm_up_epochs = kwargs.get("warm_epochs", 0)
         self.cl_epochs = kwargs.get("cl_epochs", None)
@@ -38,7 +33,9 @@ class BaseRunner(pl.LightningModule):
         self.prediction_list = []
         self.real_value_list = []
         self.scaler = load_pkl("./datasets/" + dataset_name + "/output/in{0}_out{1}/scaler_in{0}_out{1}.pkl".format(input_len,output_len))
-        self.metrics = {"MAE": masked_mae, "RMSE": masked_rmse, "MAPE": masked_mape}
+        self.val_metrics = {"Val_MAE": masked_mae, "Val_RMSE": masked_rmse, "Val_MAPE": masked_mape}
+        self.test_metrics = {"Test_MAE": masked_mae, "Test_RMSE": masked_rmse, "Test_MAPE": masked_mape}
+
 
     def select_input_features(self, data: torch.Tensor) -> torch.Tensor:
         if self.forward_features is not None:
@@ -90,6 +87,7 @@ class BaseRunner(pl.LightningModule):
         else:
             raise TypeError("Unknown metric type: {0}".format(type(metric_func)))
         return metric_item
+
     def shared_step(self, batch, batch_idx):
         prediction, real_value = self(batch,iter_num=batch_idx)
         prediction_rescaled = SCALER_REGISTRY.get(self.scaler["func"])(prediction, **self.scaler["args"])
@@ -105,25 +103,26 @@ class BaseRunner(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         prediction, real_value = self.shared_step(batch, batch_idx)
         metrics = {}
-        for metric_name, metric_func in self.metrics.items():
+        for metric_name, metric_func in self.val_metrics.items():
             metric_item = self.metric_forward(metric_func, [prediction, real_value])
             metrics[metric_name] = metric_item
         self.log_dict(metrics)
-        return metrics
 
     def test_step(self, batch, batch_idx):
         prediction, real_value = self.shared_step(batch, batch_idx)
         metrics = {}
-        for metric_name, metric_func in self.metrics.items():
+        for metric_name, metric_func in self.test_metrics.items():
             metric_item = self.metric_forward(metric_func, [prediction, real_value])
             metrics[metric_name] = metric_item
         self.log_dict(metrics)
         return metrics
 
     def configure_optimizers(self):
-        return torch.optim.Adam(
+        optimizer = torch.optim.Adam(
             self.parameters(),
             lr=self.learning_rate,
             weight_decay=self.weight_decay,
             eps=self.eps
         )
+        scheduler = MultiStepLR(optimizer=optimizer,milestones=[1, 50, 80],gamma=0.5)
+        return [optimizer], [scheduler]
