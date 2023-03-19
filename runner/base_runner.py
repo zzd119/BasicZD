@@ -2,7 +2,7 @@ import pytorch_lightning as pl
 import torch.nn as nn
 from torch.optim.lr_scheduler import  MultiStepLR
 from data.transform import *
-from metrics import masked_mae, masked_rmse, masked_mape
+from metrics import masked_mae, masked_rmse, masked_mape, l1_loss, l2_loss
 import functools
 from utils import load_pkl
 from utils.registry import SCALER_REGISTRY
@@ -106,7 +106,7 @@ class BaseRunner(pl.LightningModule):
         for metric_name, metric_func in self.val_metrics.items():
             metric_item = self.metric_forward(metric_func, [prediction, real_value])
             metrics[metric_name] = metric_item
-        self.log_dict(metrics)
+        self.log_dict(metrics, prog_bar=True)
 
     def test_step(self, batch, batch_idx):
         prediction, real_value = self.shared_step(batch, batch_idx)
@@ -124,5 +124,5 @@ class BaseRunner(pl.LightningModule):
             weight_decay=self.weight_decay,
             eps=self.eps
         )
-        scheduler = MultiStepLR(optimizer=optimizer,milestones=[1, 50, 80],gamma=0.5)
+        scheduler = MultiStepLR(optimizer=optimizer,milestones=[1, 50, 100],gamma=0.5)
         return [optimizer], [scheduler]
