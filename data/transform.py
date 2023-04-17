@@ -1,10 +1,16 @@
 import pickle
 import torch
 import numpy as np
-from utils.registry import SCALER_REGISTRY
 
 
-@SCALER_REGISTRY.register()
+def data_transform(transform_type,data,args):
+    if transform_type == "re_standard_transform":
+        data_norm = re_standard_transform(data,**args)
+    elif transform_type == "re_min_max_transform":
+        data_norm = re_min_max_transform(data,**args)
+
+    return data_norm
+
 def standard_transform(data: np.array, output_dir: str, train_index: list, history_seq_len: int, future_seq_len: int) -> np.array:
     data_train = data[:train_index[-1][1], ...]
 
@@ -25,7 +31,7 @@ def standard_transform(data: np.array, output_dir: str, train_index: list, histo
     return data_norm
 
 
-@SCALER_REGISTRY.register()
+
 def re_standard_transform(data: torch.Tensor, **kwargs) -> torch.Tensor:
 
     mean, std = kwargs["mean"], kwargs["std"]
@@ -34,7 +40,7 @@ def re_standard_transform(data: torch.Tensor, **kwargs) -> torch.Tensor:
     return data
 
 
-@SCALER_REGISTRY.register()
+
 def min_max_transform(data: np.array, output_dir: str, train_index: list, history_seq_len: int, future_seq_len: int) -> np.array:
 
     data_train = data[:train_index[-1][1], ...]
@@ -59,7 +65,7 @@ def min_max_transform(data: np.array, output_dir: str, train_index: list, histor
     return data_norm
 
 
-@SCALER_REGISTRY.register()
+
 def re_min_max_transform(data: torch.Tensor, **kwargs) -> torch.Tensor:
 
     min_value, max_value = kwargs["min_value"], kwargs["max_value"]

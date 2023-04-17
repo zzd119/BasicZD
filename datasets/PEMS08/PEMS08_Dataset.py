@@ -14,6 +14,8 @@ class PEMS08_Dataset():
         parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
         parser.add_argument("--output_dir", type=str,
                             default="datasets/{0}/output/in{1}_out{2}".format(dataset_name,history_seq_len, future_seq_len), help="Output directory.")
+        parser.add_argument("--adj_dir", type=str,
+                            default="datasets/{0}/output/adj".format(dataset_name), help="Spatial directory.")
         parser.add_argument("--data_file_path", type=str,
                             default="datasets/{0}/raw_data/{0}.npz".format(dataset_name), help="Raw traffic readings.")
         parser.add_argument("--graph_file_path", type=str,

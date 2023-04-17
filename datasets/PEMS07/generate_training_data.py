@@ -1,12 +1,18 @@
 import os
+import pathlib
 import sys
 import shutil
 import pickle
 import argparse
 
+import networkx as nx
 import numpy as np
+import torch
+from node2vec import Node2Vec
 
 from datasets.PEMS07.generate_adj_mx import generate_adj_pems07
+from utils import load_pkl
+
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../../.."))
 from data.transform import standard_transform
@@ -31,6 +37,7 @@ def PEMS07_generate_data(args: argparse.Namespace):
     add_time_of_day = args.tod
     add_day_of_week = args.dow
     output_dir = args.output_dir
+    adj_dir = args.adj_dir
     train_ratio = args.train_ratio
     valid_ratio = args.valid_ratio
     data_file_path = args.data_file_path
@@ -96,10 +103,12 @@ def PEMS07_generate_data(args: argparse.Namespace):
     with open(output_dir + "/data_in{0}_out{1}.pkl".format(history_seq_len, future_seq_len), "wb") as f:
         pickle.dump(data, f)
     # copy adj
-    if os.path.exists(args.graph_file_path):
-        # copy
-        shutil.copyfile(args.graph_file_path, output_dir + "/adj_mx.pkl")
+    if not os.path.exists(adj_dir):
+        os.makedirs(adj_dir)
+    if os.path.exists(graph_file_path):
+        shutil.copyfile(graph_file_path, adj_dir + "/adj_mx.pkl")
     else:
-        # generate and copy
         generate_adj_pems07()
-        shutil.copyfile(graph_file_path, output_dir + "/adj_mx.pkl")
+        shutil.copyfile(graph_file_path, adj_dir + "/adj_mx.pkl")
+
+

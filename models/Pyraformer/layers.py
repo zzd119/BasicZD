@@ -400,26 +400,34 @@ class Predictor(nn.Module):
 class Decoder(nn.Module):
     """ A encoder model with self attention mechanism. """
 
-    def __init__(self, opt, mask):
+    def __init__(self, model_args, mask):
         super().__init__()
 
-        self.model_type = opt.model
+        self.d_model = model_args["d_model"]
+        self.d_inner_hid = model_args["d_inner_hid"]
+        self.n_head = model_args["n_head"]
+        self.d_k = model_args["d_k"]
+        self.d_v = model_args["d_v"]
+        self.dropout = model_args["dropout"]
+        self.enc_in = model_args["enc_in"]
+        self.embed_type = model_args["embed_type"]
+        self.num_time_features = model_args["num_time_features"]
         self.mask = mask
 
         self.layers = nn.ModuleList([
-            DecoderLayer(opt.d_model, opt.d_inner_hid, opt.n_head, opt.d_k, opt.d_v, dropout=opt.dropout,
+            DecoderLayer(self.d_model, self.d_inner_hid, self.n_head, self.d_k, self.d_v, dropout=self.dropout,
                          normalize_before=False),
-            DecoderLayer(opt.d_model, opt.d_inner_hid, opt.n_head, opt.d_k, opt.d_v, dropout=opt.dropout,
+            DecoderLayer(self.d_model, self.d_inner_hid, self.n_head, self.d_k, self.d_v, dropout=self.dropout,
                          normalize_before=False)
         ])
 
-        if opt.embed_type == 'CustomEmbedding':
+        if self.embed_type == 'CustomEmbedding':
             self.dec_embedding = DataEmbedding(
-                opt.enc_in, opt.d_model, opt.num_time_features, opt.dropout)
-            # self.dec_embedding = CustomEmbedding(opt.enc_in, opt.d_model, opt.covariate_size, opt.seq_num, opt.dropout)
+                self.enc_in, self.d_model, self.num_time_features, self.dropout)
+            # self.dec_embedding = CustomEmbedding(self.enc_in, self.d_model, self.covariate_size, self.seq_num, self.dropout)
         else:
             self.dec_embedding = DataEmbedding(
-                opt.enc_in, opt.d_model, opt.num_time_features, opt.dropout)
+                self.enc_in, self.d_model, self.num_time_features, self.dropout)
 
     def forward(self, x_dec, x_mark_dec, refer):
         dec_enc = self.dec_embedding(x_dec, x_mark_dec)

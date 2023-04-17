@@ -1,7 +1,10 @@
+import pathlib
 import pickle
 
+import networkx as nx
 import torch
 import numpy as np
+from node2vec import Node2Vec
 
 from .adjacent_matrix_norm import calculate_scaled_laplacian, calculate_symmetric_normalized_laplacian, calculate_symmetric_message_passing_adj, calculate_transition_matrix
 
@@ -100,4 +103,19 @@ def load_node2vec_emb(file_path: str) -> torch.Tensor:
             temp = line.split(" ")
             index = int(temp[0])
             spatial_embeddings[index] = torch.Tensor([float(ch) for ch in temp[1:]])
-    return spatial_embeddings
+    return spatial_embeddings.cuda()
+
+
+def get_node2vec(dataset,dim):
+
+    SE_dir = 'datasets/{0}/output/adj/SE_{0}_{1}.txt'.format(dataset, dim)
+    path = pathlib.Path(SE_dir)
+    if not path.exists():
+        adj_mx = load_pkl("datasets/{0}/raw_data/adj_{0}.pkl".format(dataset))
+        graph = nx.from_numpy_matrix(adj_mx)
+        node2vec = Node2Vec(graph, dimensions=dim, walk_length=30, num_walks=200, workers=1)
+        model = node2vec.fit(window=10, min_count=1, batch_words=4)
+        model.wv.save_word2vec_format(SE_dir)
+
+    SE = load_node2vec_emb(SE_dir)
+    return SE

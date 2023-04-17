@@ -13,7 +13,7 @@ class MTGNN_PEMS04():
     @staticmethod
     def add_options_specific_arguments(parent_parser):
         temp_args, _ = parent_parser.parse_known_args()
-        _, adj_mx = load_adj("datasets/PEMS04/output/in{0}_out{1}/adj_mx.pkl".format(temp_args.history_seq_len,temp_args.future_seq_len),"doubletransition")
+        _, adj_mx = load_adj("datasets/PEMS04/output/adj/adj_mx.pkl", "doubletransition")
         adj_mx = torch.tensor(adj_mx) - torch.eye(307)
         temp_args, _ = parent_parser.parse_known_args()
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)

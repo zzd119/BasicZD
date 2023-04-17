@@ -1,7 +1,6 @@
 import torch
 import numpy as np
-
-from utils.registry import SCALER_REGISTRY
+from data.transform import data_transform
 from .base_runner import BaseRunner
 
 
@@ -11,7 +10,7 @@ class MTGNNRunner(BaseRunner):
         self.forward_features = kwargs["forward_features"]
         self.target_features = kwargs["target_features"]
         self.step_size = kwargs["step_size"]
-        self.num_nodes = kwargs["num_node"]
+        self.num_nodes = kwargs["num_nodes"]
         self.num_split = kwargs["num_split"]
         self.perm = None
 
@@ -58,6 +57,6 @@ class MTGNNRunner(BaseRunner):
             future_data, history_data = batch
             data = future_data[:, :, idx, :], history_data[:, :, idx, :], idx
             prediction, real_value = self(data, batch_idx)
-            prediction_rescaled = SCALER_REGISTRY.get(self.scaler["func"])(prediction, **self.scaler["args"])
-            real_value_rescaled = SCALER_REGISTRY.get(self.scaler["func"])(real_value, **self.scaler["args"])
+            prediction_rescaled = data_transform(self.scaler["func"], prediction, self.scaler["args"])
+            real_value_rescaled = data_transform(self.scaler["func"], real_value, self.scaler["args"])
             return prediction_rescaled, real_value_rescaled

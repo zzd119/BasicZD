@@ -1,11 +1,18 @@
 import os
+import pathlib
 import sys
 import shutil
 import pickle
 import argparse
+
+import networkx as nx
 import scipy.io as scio
 import numpy as np
 import pandas as pd
+import torch
+from node2vec import Node2Vec
+
+from utils import load_pkl
 
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../../.."))
@@ -32,6 +39,7 @@ def ShangHai_generate_data(args: argparse.Namespace):
     add_time_of_day = args.tod
     add_day_of_week = args.dow
     output_dir = args.output_dir
+    adj_dir = args.adj_dir
     train_ratio = args.train_ratio
     valid_ratio = args.valid_ratio
     data_file_path = args.data_file_path
@@ -100,8 +108,10 @@ def ShangHai_generate_data(args: argparse.Namespace):
         pickle.dump(data, f)
     # copy adj
     adj_mx = pd.read_csv(graph_file_path)
-    with open("./datasets/{0}/output/in{1}_out{2}/adj_ShangHai.pkl".format(dataset_name,history_seq_len, future_seq_len), "wb") as f:
+    with open(adj_dir + "/adj_ShangHai.pkl", "wb") as f:
         pickle.dump(adj_mx, f)
+
+
 
 
 

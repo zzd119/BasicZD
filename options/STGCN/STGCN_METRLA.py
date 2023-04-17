@@ -13,7 +13,7 @@ class STGCN_METRLA():
     @staticmethod
     def add_options_specific_arguments(parent_parser):
         temp_args, _ = parent_parser.parse_known_args()
-        adj_mx,_ = load_adj("datasets/METRLA/output/in{0}_out{1}/adj_mx.pkl".format(temp_args.history_seq_len,temp_args.future_seq_len), "normlap")
+        adj_mx, _ = load_adj("datasets/METRLA/output/adj/adj_mx.pkl","normlap")
         adj_mx = torch.tensor(adj_mx[0])
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)

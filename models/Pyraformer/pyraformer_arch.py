@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 
-from easydict import EasyDict
-
 from .embed import DataEmbedding, CustomEmbedding
 from .layers import Bottleneck_Construct, Conv_Construct, MaxPooling_Construct, AvgPooling_Construct
 from .layers import EncoderLayer, Decoder, Predictor
@@ -13,41 +11,58 @@ from ..utils import data_transformation_4_xformer
 class Encoder(nn.Module):
     """ A encoder model with self attention mechanism. """
 
-    def __init__(self, opt):
+    def __init__(self, model_args):
         super().__init__()
 
-        self.d_model = opt.d_model
-        self.window_size = opt.window_size
-        self.truncate = opt.truncate
-        if opt.decoder == 'attention':
+        self.d_model = model_args["d_model"]
+        self.window_size = eval(model_args["window_size"])
+        self.truncate = model_args["truncate"]
+        self.input_size = model_args["input_size"]
+        self.decoder = model_args["decoder"]
+        self.enc_in = model_args["enc_in"]
+        self.truncate = model_args["truncate"]
+        self.inner_size = model_args["inner_size"]
+        self.d_inner_hid = model_args["d_inner_hid"]
+        self.n_head = model_args["n_head"]
+        self.d_k = model_args["d_k"]
+        self.d_v = model_args["d_v"]
+        self.dropout = model_args["dropout"]
+        self.n_layer = model_args["n_layer"]
+        self.embed_type = model_args["embed_type"]
+        self.num_time_features = model_args["num_time_features"]
+        self.d_bottleneck = model_args["d_bottleneck"]
+        self.use_tvm = model_args["use_tvm"]
+        self.CSCM = model_args["CSCM"]
+
+        if self.decoder == 'attention':
             self.mask, self.all_size = get_mask(
-                opt.input_size, opt.window_size, opt.inner_size, torch.device("cuda"))
+                self.input_size, self.window_size, self.inner_size, torch.device("cuda"))
         else:
             self.mask, self.all_size = get_mask(
-                opt.input_size+1, opt.window_size, opt.inner_size, torch.device("cuda"))
-        self.decoder_type = opt.decoder
-        if opt.decoder == 'FC':
+                self.input_size+1, self.window_size, self.inner_size, torch.device("cuda"))
+        self.decoder_type = self.decoder
+        if self.decoder == 'FC':
             self.indexes = refer_points(
-                self.all_size, opt.window_size, torch.device("cuda"))
+                self.all_size, self.window_size, torch.device("cuda"))
 
-        if opt.use_tvm:
+        if self.use_tvm:
             assert len(set(self.window_size)
                        ) == 1, "Only constant window size is supported."
-            padding = 1 if opt.decoder == 'FC' else 0
-            q_k_mask = get_q_k(opt.input_size + padding,
-                               opt.inner_size, opt.window_size[0], torch.device("cuda"))
+            padding = 1 if self.decoder == 'FC' else 0
+            q_k_mask = get_q_k(self.input_size + padding,
+                               self.inner_size, self.window_size[0], torch.device("cuda"))
             k_q_mask = get_k_q(q_k_mask)
             self.layers = nn.ModuleList([
-                EncoderLayer(opt.d_model, opt.d_inner_hid, opt.n_head, opt.d_k, opt.d_v, dropout=opt.dropout,
-                             normalize_before=False, use_tvm=True, q_k_mask=q_k_mask, k_q_mask=k_q_mask) for i in range(opt.n_layer)
+                EncoderLayer(self.d_model, self.d_inner_hid, self.n_head, self.d_k, self.d_v, dropout=self.dropout,
+                             normalize_before=False, use_tvm=True, q_k_mask=q_k_mask, k_q_mask=k_q_mask) for i in range(self.n_layer)
             ])
         else:
             self.layers = nn.ModuleList([
-                EncoderLayer(opt.d_model, opt.d_inner_hid, opt.n_head, opt.d_k, opt.d_v, dropout=opt.dropout,
-                             normalize_before=False) for i in range(opt.n_layer)
+                EncoderLayer(self.d_model, self.d_inner_hid, self.n_head, self.d_k, self.d_v, dropout=self.dropout,
+                             normalize_before=False) for i in range(self.n_layer)
             ])
 
-        if opt.embed_type == 'CustomEmbedding':
+        if self.embed_type == 'CustomEmbedding':
             # NOTE: Here is different from official code.
             #       We follow the implementation in "Are Transformers Effective for Time Series Forecasting?" (https://arxiv.org/abs/2205.13504).
             # Here is a possible reason:
@@ -55,14 +70,14 @@ class Encoder(nn.Module):
             #           and it is similar to a cruical technique similar to STID[1] for MTS forecasting, which may cause unfairness.
             #       [1] Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting.
             self.enc_embedding = DataEmbedding(
-                opt.enc_in, opt.d_model, opt.num_time_features, opt.dropout)
-            # self.enc_embedding = CustomEmbedding(opt.enc_in, opt.d_model, opt.covariate_size, opt.seq_num, opt.dropout)
+                self.enc_in, self.d_model, self.num_time_features, self.dropout)
+            # self.enc_embedding = CustomEmbedding(self.enc_in, self.d_model, self.covariate_size, self.seq_num, self.dropout)
         else:
             self.enc_embedding = DataEmbedding(
-                opt.enc_in, opt.d_model, opt.num_time_features, opt.dropout)
+                self.enc_in, self.d_model, self.num_time_features, self.dropout)
 
-        self.conv_layers = eval(opt.CSCM)(
-            opt.d_model, opt.window_size, opt.d_bottleneck)
+        self.conv_layers = eval(self.CSCM)(
+            self.d_model, self.window_size, self.d_bottleneck)
 
     def forward(self, x_enc, x_mark_enc):
 
@@ -91,24 +106,23 @@ class Pyraformer(nn.Module):
 
     def __init__(self, **model_args):
         super().__init__()
-        opt = EasyDict(model_args)
-        opt.window_size = eval(opt.window_size)
+        window_size = eval(model_args["window_size"])
+        self.predict_step = model_args["predict_step"]
+        self.d_model = model_args["d_model"]
+        self.input_size = model_args["input_size"]
+        self.decoder_type = model_args["decoder"]
+        self.channels = model_args["enc_in"]
+        self.truncate = model_args["truncate"]
 
-        self.predict_step = opt.predict_step
-        self.d_model = opt.d_model
-        self.input_size = opt.input_size
-        self.decoder_type = opt.decoder
-        self.channels = opt.enc_in
-
-        self.encoder = Encoder(opt)
-        if opt.decoder == 'attention':
+        self.encoder = Encoder(model_args)
+        if self.decoder_type == 'attention':
             mask = get_subsequent_mask(
-                opt.input_size, opt.window_size, opt.predict_step, opt.truncate)
-            self.decoder = Decoder(opt, mask)
-            self.predictor = Predictor(opt.d_model, opt.enc_in)
-        elif opt.decoder == 'FC':
+                self.input_size, window_size, self.predict_step, self.truncate)
+            self.decoder = Decoder(model_args, mask)
+            self.predictor = Predictor(self.d_model, self.channels)
+        elif self.decoder_type == 'FC':
             self.predictor = Predictor(
-                4 * opt.d_model, opt.predict_step * opt.enc_in)
+                4 * self.d_model, self.predict_step * self.channels)
 
     def forward_xformer(self, x_enc: torch.Tensor, x_mark_enc: torch.Tensor, x_dec: torch.Tensor, x_mark_dec: torch.Tensor,
                         enc_self_mask: torch.Tensor = None, dec_self_mask: torch.Tensor = None, dec_enc_mask: torch.Tensor = None) -> torch.Tensor:

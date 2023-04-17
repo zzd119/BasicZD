@@ -5,7 +5,7 @@ from data.transform import *
 from metrics import masked_mae, masked_rmse, masked_mape, l1_loss, l2_loss
 import functools
 from utils import load_pkl
-from utils.registry import SCALER_REGISTRY
+
 
 
 class BaseRunner(pl.LightningModule):
@@ -16,6 +16,7 @@ class BaseRunner(pl.LightningModule):
         input_len,
         output_len,
         dataset_name,
+        test_predict_point,
         forward_features,
         target_features,
         **kwargs
@@ -30,6 +31,7 @@ class BaseRunner(pl.LightningModule):
         self.prediction_length = kwargs.get("prediction_length", None)
         self.forward_features = forward_features
         self.target_features = target_features
+        self.test_predict_point = test_predict_point
         self.prediction_list = []
         self.real_value_list = []
         self.scaler = load_pkl("./datasets/" + dataset_name + "/output/in{0}_out{1}/scaler_in{0}_out{1}.pkl".format(input_len,output_len))
@@ -90,8 +92,8 @@ class BaseRunner(pl.LightningModule):
 
     def shared_step(self, batch, batch_idx):
         prediction, real_value = self(batch,iter_num=batch_idx)
-        prediction_rescaled = SCALER_REGISTRY.get(self.scaler["func"])(prediction, **self.scaler["args"])
-        real_value_rescaled = SCALER_REGISTRY.get(self.scaler["func"])(real_value, **self.scaler["args"])
+        prediction_rescaled = data_transform(self.scaler["func"],prediction, self.scaler["args"])
+        real_value_rescaled = data_transform(self.scaler["func"],real_value, self.scaler["args"])
         return prediction_rescaled, real_value_rescaled
 
     def training_step(self, batch, batch_idx):
@@ -111,11 +113,28 @@ class BaseRunner(pl.LightningModule):
     def test_step(self, batch, batch_idx):
         prediction, real_value = self.shared_step(batch, batch_idx)
         metrics = {}
+        for i in self.test_predict_point:
+            # For horizon i, only calculate the metrics **at that time** slice here.
+            i = i -1
+            pred = prediction[:, i, :, :]
+            real = real_value[:, i, :, :]
+            if i < 10:
+                num = "{}_".format(i+1)
+            else:
+                num = chr(65+i-9) + "_"
+            for metric_name, metric_func in self.test_metrics.items():
+                metric_name = num + metric_name
+                metric_item = self.metric_forward(metric_func, [pred, real])
+                metrics[metric_name] = metric_item
         for metric_name, metric_func in self.test_metrics.items():
             metric_item = self.metric_forward(metric_func, [prediction, real_value])
             metrics[metric_name] = metric_item
         self.log_dict(metrics)
         return metrics
+
+    def on_test_epoch_end(self) -> None:
+        super().on_test_epoch_end()
+        print()
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
@@ -124,5 +143,4 @@ class BaseRunner(pl.LightningModule):
             weight_decay=self.weight_decay,
             eps=self.eps
         )
-        scheduler = MultiStepLR(optimizer=optimizer,milestones=[1, 50, 100],gamma=0.5)
-        return [optimizer], [scheduler]
+        return [optimizer]

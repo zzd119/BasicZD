@@ -1,11 +1,17 @@
 import os
+import pathlib
 import sys
 import shutil
 import pickle
 import argparse
 
+import networkx as nx
 import numpy as np
 import pandas as pd
+import torch
+from node2vec import Node2Vec
+
+from utils import load_pkl
 
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../../.."))
@@ -32,6 +38,7 @@ def ShenZhen_generate_data(args: argparse.Namespace):
     add_time_of_day = args.tod
     add_day_of_week = args.dow
     output_dir = args.output_dir
+    adj_dir = args.adj_dir
     train_ratio = args.train_ratio
     valid_ratio = args.valid_ratio
     data_file_path = args.data_file_path
@@ -71,13 +78,13 @@ def ShenZhen_generate_data(args: argparse.Namespace):
     feature_list = [data_norm]
     if add_time_of_day:
         # numerical time_of_day
-        time_ind = [i % steps_per_day / 96 for i in range(data.shape[0])]
+        time_ind = [i % steps_per_day / steps_per_day for i in range(data.shape[0])]
         time_ind = np.array(time_ind)
         time_in_day = np.tile(time_ind, [1, data.shape[1], 1]).transpose((2, 1, 0))
         feature_list.append(time_in_day)
 
     if add_day_of_week:
-        day_in_week = [(i // 96) % 7 for i in range(data.shape[0])]
+        day_in_week = [(i // steps_per_day) % 7 for i in range(data.shape[0])]
         day_in_week = np.array(day_in_week)
         day_in_week = np.tile(day_in_week, [1, data.shape[1], 1]).transpose((2, 1, 0))
         feature_list.append(day_in_week)
@@ -98,8 +105,9 @@ def ShenZhen_generate_data(args: argparse.Namespace):
         pickle.dump(data, f)
     # copy adj
     adj_mx = pd.read_csv(graph_file_path)
-    with open("./datasets/{0}/output/in{1}_out{2}/adj_ShenZhen.pkl".format(dataset_name,history_seq_len, future_seq_len), "wb") as f:
+    with open(adj_dir + "/adj_ShenZhen.pkl", "wb") as f:
         pickle.dump(adj_mx, f)
+
 
 
 
