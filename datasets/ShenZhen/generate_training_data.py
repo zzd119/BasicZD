@@ -104,6 +104,8 @@ def ShenZhen_generate_data(args: argparse.Namespace):
     with open(output_dir + "/data_in{0}_out{1}.pkl".format(history_seq_len, future_seq_len), "wb") as f:
         pickle.dump(data, f)
     # copy adj
+    if not os.path.exists(adj_dir):
+        os.makedirs(adj_dir)
     adj_mx = pd.read_csv(graph_file_path)
     with open(adj_dir + "/adj_ShenZhen.pkl", "wb") as f:
         pickle.dump(adj_mx, f)

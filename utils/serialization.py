@@ -2,6 +2,7 @@ import pathlib
 import pickle
 
 import networkx as nx
+import pandas as pd
 import torch
 import numpy as np
 from node2vec import Node2Vec
@@ -111,7 +112,13 @@ def get_node2vec(dataset,dim):
     SE_dir = 'datasets/{0}/output/adj/SE_{0}_{1}.txt'.format(dataset, dim)
     path = pathlib.Path(SE_dir)
     if not path.exists():
-        adj_mx = load_pkl("datasets/{0}/raw_data/adj_{0}.pkl".format(dataset))
+        if dataset == "PEMSBAY" or dataset == "METRLA":
+            adj_info = load_pkl("datasets/{0}/raw_data/adj_{0}.pkl".format(dataset))
+            adj_mx = adj_info[2]
+        elif dataset == "ShenZhen":
+            adj_mx = pd.read_csv("datasets/{0}/raw_data/adj_{0}.csv".format(dataset), header=None).values
+        else:
+            adj_mx = load_pkl("datasets/{0}/raw_data/adj_{0}.pkl".format(dataset))
         graph = nx.from_numpy_matrix(adj_mx)
         node2vec = Node2Vec(graph, dimensions=dim, walk_length=30, num_walks=200, workers=1)
         model = node2vec.fit(window=10, min_count=1, batch_words=4)
