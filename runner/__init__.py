@@ -14,9 +14,11 @@ from runner.pyraformer_runner import PyraformerRunner
 from runner.stemgnn_runner import StemGNNRunner
 from runner.stgcn_runner import STGCNRunner
 from runner.stnorm_runner import STNormRunner
+from runner.traffictransformer_runner import TrafficTransformerRunner
 
 __all__ = ["BaseRunner","STIDRunner","GWNETRunner","AGCRNRunner",
            "MTGNNRunner","AutoformerRunner","DCRNNRunner","D2STGNNRunner",
            "DGCRNRunner","FEDformerRunner","GTSRunner","InformerRunner",
-           "PyraformerRunner","StemGNNRunner","STGCNRunner","STNormRunner"]
+           "PyraformerRunner","StemGNNRunner","STGCNRunner","STNormRunner",
+           "TrafficTransformerRunner"]
 
