@@ -30,6 +30,6 @@ class STNorm_PEMS04():
         parser.add_argument("--test_batch_size", default=64)
         parser.add_argument("--forward_features", default=[0,1])
         parser.add_argument("--target_features", default=[0])
-        parser.add_argument("--learning_rate", default=0.002)
+        parser.add_argument("--learning_rate", default=0.001)
         parser.add_argument("--weight_decay", default=0.0001)
         return parser

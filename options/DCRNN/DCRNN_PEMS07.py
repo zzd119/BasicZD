@@ -5,7 +5,7 @@ import torch
 from utils import load_adj
 
 
-class DCRNN_PEMS04():
+class DCRNN_PEMS07():
 
     def __init__(self) -> None:
         super().__init__()
@@ -13,7 +13,7 @@ class DCRNN_PEMS04():
     @staticmethod
     def add_options_specific_arguments(parent_parser):
         temp_args, _ = parent_parser.parse_known_args()
-        adj_mx, _ = load_adj("datasets/PEMS04/output/adj/adj_mx.pkl","doubletransition")
+        adj_mx, _ = load_adj("datasets/PEMS04/output/adj/adj_mx.pkl", "doubletransition")
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
@@ -21,7 +21,7 @@ class DCRNN_PEMS04():
         parser.add_argument("--horizon", default=12)
         parser.add_argument("--input_dim", default=2)
         parser.add_argument("--max_diffusion_step", default=2)
-        parser.add_argument("--num_nodes", default=307)
+        parser.add_argument("--num_node", default=307)
         parser.add_argument("--num_rnn_layers", default=2)
         parser.add_argument("--output_dim", default=1)
         parser.add_argument("--rnn_units", default=64)

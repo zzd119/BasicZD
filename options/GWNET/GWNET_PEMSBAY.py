@@ -5,7 +5,7 @@ import torch
 from utils import load_adj
 
 
-class GWNET_METRLA():
+class GWNET_PEMSBAY():
 
     def __init__(self) -> None:
         super().__init__()
@@ -13,11 +13,11 @@ class GWNET_METRLA():
     @staticmethod
     def add_options_specific_arguments(parent_parser):
         temp_args, _ = parent_parser.parse_known_args()
-        adj_mx, _ = load_adj("datasets/METRLA/output/adj/adj_mx.pkl","doubletransition")
+        adj_mx, _ = load_adj("datasets/PEMSBAY/output/adj/adj_mx.pkl","doubletransition")
         parser = argparse.ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--num_nodes", default=207)
+        parser.add_argument("--num_node", default=325)
         parser.add_argument("--supports", default=[torch.tensor(i) for i in adj_mx])
         parser.add_argument("--dropout", default=0.3)
         parser.add_argument("--gcn_bool", default=True)

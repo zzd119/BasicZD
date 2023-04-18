@@ -1,6 +1,6 @@
 import argparse
 
-class StemGNN_PEMS04():
+class StemGNN_PEMS08():
 
     def __init__(self) -> None:
         super().__init__()
@@ -11,7 +11,7 @@ class StemGNN_PEMS04():
         parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--units", default=307)
+        parser.add_argument("--units", default=170)
         parser.add_argument("--stack_cnt", default=2)
         parser.add_argument("--time_step", default=12)
         parser.add_argument("--multi_layer", default=5)
