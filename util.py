@@ -26,6 +26,7 @@ from models.STID import STID
 from models.STNorm import STNorm
 from models.StemGNN import StemGNN
 from models.STGCN import STGCN
+from models.TrafficTransformer.trafficTransformer_arch import TrafficTransformer
 
 
 def create_data(args):
@@ -84,6 +85,8 @@ def get_model(args):
         model = STGCN(**vars(args))
     if args.model_name == "STNorm":
         model = STNorm(**vars(args))
+    if args.model_name == "TrafficTransformer":
+        model = TrafficTransformer(**vars(args))
     return model
 
 def get_task(args, model):

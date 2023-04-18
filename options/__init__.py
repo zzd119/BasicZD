@@ -60,6 +60,12 @@ from options.StemGNN.StemGNN_PEMS07 import StemGNN_PEMS07
 from options.StemGNN.StemGNN_PEMS08 import StemGNN_PEMS08
 from options.StemGNN.StemGNN_PEMSBAY import StemGNN_PEMSBAY
 from options.StemGNN.StemGNN_ShenZhen import StemGNN_ShenZhen
+from options.TrafficTransformer.TrafficTransformer_METRLA import TrafficTransformer_METRLA
+from options.TrafficTransformer.TrafficTransformer_PEMS04 import TrafficTransformer_PEMS04
+from options.TrafficTransformer.TrafficTransformer_PEMS07 import TrafficTransformer_PEMS07
+from options.TrafficTransformer.TrafficTransformer_PEMS08 import TrafficTransformer_PEMS08
+from options.TrafficTransformer.TrafficTransformer_PEMSBAY import TrafficTransformer_PEMSBAY
+from options.TrafficTransformer.TrafficTransformer_ShenZhen import TrafficTransformer_ShenZhen
 
 
 __all__ = ["STID_PEMS04","STID_PEMS07","STID_PEMS08","STID_PEMSBAY","STID_METRLA","STID_ShenZhen",
@@ -70,6 +76,8 @@ __all__ = ["STID_PEMS04","STID_PEMS07","STID_PEMS08","STID_PEMSBAY","STID_METRLA
            "StemGNN_PEMS04","StemGNN_PEMS07","StemGNN_PEMS08","StemGNN_PEMSBAY","StemGNN_METRLA","StemGNN_ShenZhen",
            "STGCN_PEMS04","STGCN_PEMS07","STGCN_PEMS08","STGCN_PEMSBAY","STGCN_METRLA","STGCN_ShenZhen",
            "STNorm_PEMS04","STNorm_PEMS07","STNorm_PEMS08","STNorm_PEMSBAY","STNorm_METRLA","STNorm_ShenZhen",
+           "TrafficTransformer_PEMS04", "TrafficTransformer_PEMS07", "TrafficTransformer_PEMS08",
+           "TrafficTransformer_PEMSBAY", "TrafficTransformer_METRLA", "TrafficTransformer_ShenZhen",
            "D2STGNN_PEMS04","D2STGNN_METRLA",
            "DGCRN_PEMS04","DGCRN_METRLA",
            "GTS_PEMS04", "GTS_METRLA",
@@ -77,6 +85,8 @@ __all__ = ["STID_PEMS04","STID_PEMS07","STID_PEMS08","STID_PEMSBAY","STID_METRLA
            "Autoformer_PEMS04","Autoformer_METRLA",
            "Informer_PEMS04", "Informer_METRLA",
            "Pyraformer_PEMS04", "Pyraformer_METRLA",]
+
+
 
 
 

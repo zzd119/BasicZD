@@ -2,7 +2,6 @@ import argparse
 import traceback
 import options
 import datasets
-import pytorch_lightning as pl
 from util import create_data, runner_mian
 
 parser = argparse.ArgumentParser()
@@ -26,7 +25,7 @@ parser.add_argument(
     help="The name of the model for spatiotemporal prediction",
     choices=("STID","AGCRN","GWNET","MTGNN","Autoformer","D2STGNN",
              "DCRNN","DGCRN","FEDformer","GTS","Informer","Pyraformer",
-             "StemGNN","STGCN","STNorm"),
+             "StemGNN","STGCN","STNorm","TrafficTransformer"),
 
     default="STID",
 )
