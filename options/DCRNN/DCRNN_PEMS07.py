@@ -21,7 +21,7 @@ class DCRNN_PEMS07():
         parser.add_argument("--horizon", default=12)
         parser.add_argument("--input_dim", default=2)
         parser.add_argument("--max_diffusion_step", default=2)
-        parser.add_argument("--num_node", default=307)
+        parser.add_argument("--num_nodes", default=307)
         parser.add_argument("--num_rnn_layers", default=2)
         parser.add_argument("--output_dim", default=1)
         parser.add_argument("--rnn_units", default=64)

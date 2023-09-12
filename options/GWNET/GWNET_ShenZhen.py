@@ -24,7 +24,7 @@ class GWNET_ShenZhen():
         parser.add_argument("--addaptadj", default=True)
         parser.add_argument("--aptinit", default=None)
         parser.add_argument("--in_dim", default=2)
-        parser.add_argument("--out_dim", default=12)
+        parser.add_argument("--out_dim", default=4)
         parser.add_argument("--residual_channels", default=32)
         parser.add_argument("--dilation_channels", default=32)
         parser.add_argument("--skip_channels", default=256)

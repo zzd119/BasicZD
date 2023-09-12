@@ -55,9 +55,9 @@ class AGCRN(nn.Module):
     Link: https://arxiv.org/abs/2007.02842
     """
 
-    def __init__(self, num_node, input_dim, rnn_units, output_dim, horizon, num_layers, default_graph, embed_dim, cheb_k,**kwargs):
+    def __init__(self, num_nodes, input_dim, rnn_units, output_dim, horizon, num_layers, default_graph, embed_dim, cheb_k,**kwargs):
         super(AGCRN, self).__init__()
-        self.num_node = num_node
+        self.num_nodes = num_nodes
         self.input_dim = input_dim
         self.hidden_dim = rnn_units
         self.output_dim = output_dim
@@ -68,7 +68,7 @@ class AGCRN(nn.Module):
         self.node_embeddings = nn.Parameter(torch.randn(
             self.num_node, embed_dim), requires_grad=True)
 
-        self.encoder = AVWDCRNN(num_node, input_dim, rnn_units, cheb_k,
+        self.encoder = AVWDCRNN(num_nodes, input_dim, rnn_units, cheb_k,
                                 embed_dim, num_layers)
 
         # predictor
@@ -102,7 +102,7 @@ class AGCRN(nn.Module):
         # CNN based predictor
         output = self.end_conv((output))  # B, T*C, N, 1
         output = output.squeeze(-1).reshape(-1, self.horizon,
-                                            self.output_dim, self.num_node)
+                                            self.output_dim, self.num_nodes)
         output = output.permute(0, 1, 3, 2)  # B, T, N, C
 
         return output

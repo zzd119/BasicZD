@@ -27,7 +27,7 @@ class MTGNN_PEMSBAY():
         parser.add_argument("--node_dim", default=40)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--num_node", default=325)
+        parser.add_argument("--num_nodes", default=325)
         parser.add_argument("--dilation_exponential", default=1)
         parser.add_argument("--conv_channels", default=32)
         parser.add_argument("--residual_channels", default=64)

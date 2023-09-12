@@ -15,7 +15,7 @@ from utils import load_pkl
 
 # TODO: remove it when basicts can be installed by pip
 sys.path.append(os.path.abspath(__file__ + "/../../../.."))
-from data.transform import standard_transform
+from data.transform import  max_transform
 
 
 def ShenZhen_generate_data(args: argparse.Namespace):
@@ -71,7 +71,7 @@ def ShenZhen_generate_data(args: argparse.Namespace):
     test_index = index_list[train_num_short +
                             valid_num_short: train_num_short + valid_num_short + test_num_short]
 
-    scaler = standard_transform
+    scaler = max_transform
     data_norm = scaler(data, output_dir, train_index, history_seq_len, future_seq_len)
 
     # add external feature
@@ -106,8 +106,9 @@ def ShenZhen_generate_data(args: argparse.Namespace):
     # copy adj
     if not os.path.exists(adj_dir):
         os.makedirs(adj_dir)
-    adj_mx = pd.read_csv(graph_file_path)
-    with open(adj_dir + "/adj_ShenZhen.pkl", "wb") as f:
+    adj_mx = pd.read_csv(graph_file_path,header=None).values
+    adj_mx = adj_mx.astype("float32")
+    with open(adj_dir + "/adj_mx.pkl", "wb") as f:
         pickle.dump(adj_mx, f)
 
 

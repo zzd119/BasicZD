@@ -15,7 +15,7 @@ class AGCRN_ShenZhen():
         parser.add_argument("--input_dim", default=2)
         parser.add_argument("--output_dim", default=1)
         parser.add_argument("--rnn_units", default=64)
-        parser.add_argument("--horizon", default=12)
+        parser.add_argument("--horizon", default=4)
         parser.add_argument("--num_layers", default=2)
         parser.add_argument("--default_graph", default=True)
         parser.add_argument("--embed_dim", default=10)

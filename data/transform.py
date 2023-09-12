@@ -8,6 +8,8 @@ def data_transform(transform_type,data,args):
         data_norm = re_standard_transform(data,**args)
     elif transform_type == "re_min_max_transform":
         data_norm = re_min_max_transform(data,**args)
+    elif transform_type == "re_max_transform":
+        data_norm = re_max_transform(data,**args)
 
     return data_norm
 
@@ -71,4 +73,32 @@ def re_min_max_transform(data: torch.Tensor, **kwargs) -> torch.Tensor:
     min_value, max_value = kwargs["min_value"], kwargs["max_value"]
     data = (data + 1.) / 2.
     data = 1. * data * (max_value - min_value) + min_value
+    return data
+
+def max_transform(data: np.array, output_dir: str, train_index: list, history_seq_len: int, future_seq_len: int) -> np.array:
+
+    data_train = data[:train_index[-1][1], ...]
+
+    max_value = data_train.max(axis=(0, 1), keepdims=False)[0]
+
+    print("max: (training data)", max_value)
+    scaler = {}
+    scaler["func"] = re_max_transform.__name__
+    scaler["args"] = {"max_value": max_value}
+    with open(output_dir + "/scaler_in{0}_out{1}.pkl".format(history_seq_len, future_seq_len), "wb") as f:
+        pickle.dump(scaler, f)
+
+    def normalize(x):
+        max_val = np.max(x)
+        x = x / max_val
+        return x
+
+    data_norm = normalize(data)
+    return data_norm
+
+
+def re_max_transform(data: torch.Tensor, **kwargs) -> torch.Tensor:
+
+    max_value = kwargs["max_value"]
+    data = data * max_value
     return data

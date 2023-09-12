@@ -20,7 +20,7 @@ class STNorm_ShenZhen():
         parser.add_argument("--tnorm_bool", default=True)
         parser.add_argument("--snorm_bool", default=True)
         parser.add_argument("--in_dim", default=2)
-        parser.add_argument("--out_dim", default=12)
+        parser.add_argument("--out_dim", default=4)
         parser.add_argument("--channels", default=32)
         parser.add_argument("--kernel_size", default=2)
         parser.add_argument("--blocks", default=4)

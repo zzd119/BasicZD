@@ -11,7 +11,7 @@ class AGCRN_PEMSBAY():
         parser = argparse.ArgumentParser(parents=[parent_parser],add_help=False)
         parser.add_argument("--input_len", default=temp_args.history_seq_len)
         parser.add_argument("--output_len", default=temp_args.future_seq_len)
-        parser.add_argument("--num_node", default=325)
+        parser.add_argument("--num_nodes", default=325)
         parser.add_argument("--input_dim", default=2)
         parser.add_argument("--output_dim", default=1)
         parser.add_argument("--rnn_units", default=64)
